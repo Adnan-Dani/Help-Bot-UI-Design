@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Chat Bot </title>
+ 
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
+    <!-- END GLOBAL MANDATORY STYLES --> 
+    <link href="css/chatBot.css" rel="stylesheet" type="text/css"/> 
+</head>
+<body>
+<!-- Chat bot UI start -->
+<div class="chat-screen">
+    <div class="chat-header">
+        <div class="chat-header-title">
+            Let’s chat? - We're online
+        </div>
+    </div>
+    <div class="chat-body">
+        <div class="chat-start">Monday, 1:27 PM</div>
+        <div class="chat-bubble you">Welcome to our site, if you need help simply reply to this message, we are online and ready to help.</div>
+
+        <!-- <div class="chat-bubble me">As i am not getting any weekly reports nowadays.</div> -->
+        <!-- <div class="chat-bubble you">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto;display: block;shape-rendering: auto;width: 43px;height: 20px;" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                <circle cx="0" cy="44.1678" r="15" fill="#ffffff">
+                    <animate attributeName="cy" calcMode="spline" keySplines="0 0.5 0.5 1;0.5 0 1 0.5;0.5 0.5 0.5 0.5" repeatCount="indefinite" values="57.5;42.5;57.5;57.5" keyTimes="0;0.3;0.6;1" dur="1s" begin="-0.6s"></animate>
+                </circle> <circle cx="45" cy="43.0965" r="15" fill="#ffffff">
+                <animate attributeName="cy" calcMode="spline" keySplines="0 0.5 0.5 1;0.5 0 1 0.5;0.5 0.5 0.5 0.5" repeatCount="indefinite" values="57.5;42.5;57.5;57.5" keyTimes="0;0.3;0.6;1" dur="1s" begin="-0.39999999999999997s"></animate>
+            </circle> <circle cx="90" cy="52.0442" r="15" fill="#ffffff">
+                <animate attributeName="cy" calcMode="spline" keySplines="0 0.5 0.5 1;0.5 0 1 0.5;0.5 0.5 0.5 0.5" repeatCount="indefinite" values="57.5;42.5;57.5;57.5" keyTimes="0;0.3;0.6;1" dur="1s" begin="-0.19999999999999998s"></animate>
+            </circle></svg>
+        </div> -->
+    </div>
+    <div class="chat-input">
+         
+        <input type="text" id="prompt" placeholder="Type a message...">
+        <div class="input-action-icon">
+            <a id="sendMesg"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></a>
+        </div>
+    </div>
+ 
+</div>
+<div class="chat-bot-icon"> 
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-message-square animate"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x "><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+</div>
+<!-- Chat Bot UI Ends -->
+ 
+ 
+<!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha512-U6K1YLIFUWcvuw5ucmMtT9HH4t0uz3M366qrF5y4vnyH6dgDzndlcGvH/Lz5k8NFh80SN95aJ5rqGZEdaQZ7ZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="js/popper.min.js"></script>
+<!-- <script src="js/bootstrap.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-v4-rtl/4.4.1-0/js/bootstrap.min.js" integrity="sha512-gaMoFu7uCFiLfgiU0MXZc/qreuG03Hg/EqRflGara7tlcl3GepIKYY7NjKL/3PwlsR3KacYt0Yi09P1I2/aiJg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- <script src="js/select2.min.js"></script> -->
+<script>
+    // Create a new WebSocket object
+    const socket = new WebSocket('ws://localhost:8081');
+
+    // Event handler for when the connection is established
+    socket.addEventListener('open', function (event) {
+      console.log('WebSocket connection established');
+       
+    });
+
+    // Event handler for incoming messages from the server
+    socket.addEventListener('message', function (event) {
+        console.log(event.data.data);
+        
+        var obj = JSON.parse(event.data); 
+        console.log(`Received message from server: ${obj.bot}`);
+
+      // Add the message to the page
+      const messages = document.getElementsByClassName('chat-body')[0];
+        const message = `<div class="chat-bubble you">${obj.bot}</div>`;
+        messages.innerHTML += message;
+
+    });
+
+    // Event handler for when the connection is closed
+    socket.addEventListener('close', function (event) {
+      console.log('WebSocket connection closed');
+    });
+    $('#sendMesg').click(()=>{
+       var value = $('#prompt').val();
+       // Add the message to the page
+      const messages = document.getElementsByClassName('chat-body')[0];
+        const message = `<div class="chat-bubble me">${value}</div>`;
+        messages.innerHTML += message;
+       socket.send(value);
+       $('#prompt').val('')
+
+    })
+  </script>
+<script>
+    $(document).ready(function () {
+       
+        //Toggle fullscreen
+        $(".chat-bot-icon").click(function (e) { 
+            $(this).children('svg').toggleClass('animate');
+            $('.chat-screen').toggleClass('show-chat');
+        });
+        $('.chat-mail button').click(function () {
+            $('.chat-mail').addClass('hide');
+            $('.chat-body').removeClass('hide');
+            $('.chat-input').removeClass('hide');
+            $('.chat-header-option').removeClass('hide');
+        });
+        $('.end-chat').click(function () {
+            $('.chat-body').addClass('hide');
+            $('.chat-input').addClass('hide');
+            $('.chat-session-end').removeClass('hide');
+            $('.chat-header-option').addClass('hide');
+        });
+    });
+
+</script>
+</body>
+
+</html>
